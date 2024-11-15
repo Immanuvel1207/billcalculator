@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import './Login.css'; // Using the same CSS file as Login for consistency
+import photo from '../assets/6300830.jpg';
 
 function Register({ setIsLoggedIn, setIsAdmin }) {
   const [name, setName] = useState('');
@@ -15,28 +17,63 @@ function Register({ setIsLoggedIn, setIsAdmin }) {
       setIsLoggedIn(true);
       setIsAdmin(response.data.isAdmin);
     } catch (error) {
-      console.error('Registration error:', error.response.data.message);
+      console.error('Registration error:', error.response?.data?.message || 'Error occurred');
     }
   };
 
   return (
-    <div>
-      <h2>Register</h2>
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label>Name:</label>
-          <input type="text" value={name} onChange={(e) => setName(e.target.value)} required />
+    <div className="login-page">
+      <div className="login-box">
+        {/* Illustration */}
+        <div className="illustration-wrapper">
+          <img src={photo} alt="Illustration" />
         </div>
-        <div>
-          <label>Email:</label>
-          <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+
+        {/* Registration Form */}
+        <div id="login-form">
+          <p className="form-title">Register</p>
+          <form onSubmit={handleSubmit}>
+            <p>
+              <label>Name</label><br/>
+              <input
+                type="text"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="Enter your name"
+                required
+                className="ant-input"
+              />
+            </p>
+            <p>
+              <label>Email</label><br/>
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="Enter your email"
+                required
+                className="ant-input"
+              />
+            </p>
+            <p>
+              <label>Password</label><br/>
+              <input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Enter your password"
+                required
+                className="ant-input"
+              />
+            </p>
+            <p>
+              <button type="submit" className="login-form-button">
+                Register
+              </button>
+            </p>
+          </form>
         </div>
-        <div>
-          <label>Password:</label>
-          <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
-        </div>
-        <button type="submit">Register</button>
-      </form>
+      </div>
     </div>
   );
 }

@@ -1,0 +1,90 @@
+.login-page {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 80vh;
+  background: #f0f4ff;
+  padding: 10px;
+  text-align: center;
+}
+
+
+.login-box {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-direction: row-reverse;
+  max-width: 900px;
+  background-color: white;
+  box-shadow: 0 0 30px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  border-radius: 12px;
+}
+
+#login-form {
+  flex: 1;
+  max-width: 450px;
+  width: 100%;
+  padding: 50px;
+}
+
+#login-form p {
+  margin-bottom: 30px;
+}
+
+#login-form p.form-title {
+  color: #2c3e50;
+  font-size: 36px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.ant-form-item-control-input-content {
+  text-align: left;
+}
+
+#login-form .ant-input-affix-wrapper {
+  padding: 12px;
+}
+
+#login-form .ant-btn {
+  height: 40px;
+  border-radius: 6px;
+}
+
+.login-form-button {
+  width: 50%;
+  background-color: #2874f0;
+  padding: 5px;
+  border-radius: 10px;
+  border: none;
+  color: white;
+}
+
+.login-form-button:hover {
+  background-color: #1e5bd1;
+}
+
+.illustration-wrapper {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #eef7ff;
+}
+
+.illustration-wrapper img {
+  width: 100%;
+  max-height: 100%;
+}
+
+@media screen and (max-width: 768px) {
+  .login-box {
+    flex-direction: column;
+    box-shadow: none;
+  }
+
+  #login-form {
+    max-width: 100%;
+  }
+}
