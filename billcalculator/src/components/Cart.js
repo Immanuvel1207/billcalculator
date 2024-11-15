@@ -31,7 +31,7 @@ function Cart() {
   const placeOrder = async () => {
     try {
       const token = localStorage.getItem('token');
-      await axios.post('http://localhost:5000/api/orders', {
+      await axios.post('https://billcalculator.onrender.com/api/orders', {
         items: cart.map(item => ({ product: item.product._id, quantity: item.quantity })),
         total
       }, {

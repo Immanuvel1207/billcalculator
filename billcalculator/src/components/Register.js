@@ -9,7 +9,7 @@ function Register({ setIsLoggedIn, setIsAdmin }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('http://localhost:5000/api/users/register', { name, email, password });
+      const response = await axios.post('https://billcalculator.onrender.com/api/users/register', { name, email, password });
       localStorage.setItem('token', response.data.token);
       localStorage.setItem('isAdmin', response.data.isAdmin);
       setIsLoggedIn(true);
