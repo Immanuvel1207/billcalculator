@@ -15,7 +15,7 @@ function OrderHistory() {
     try {
       const token = localStorage.getItem('token');
       const response = await axios.get('https://billcalculator.onrender.com/api/orders/user', {
-        headers: { Authorization: `Bearer ${token}` }
+        headers: { Authorization: `Bearer ₹{token}` }
       });
       const sortedOrders = response.data.sort((a, b) => {
         if (a.status === 'Pending' && b.status !== 'Pending') return -1;
@@ -55,7 +55,7 @@ function OrderHistory() {
                     <p style={{ margin: '5px 0' }}>Time: {new Date(order.createdAt).toLocaleTimeString()}</p>
                   </div>
                   <div>
-                    <p style={{ margin: '5px 0', fontWeight: 'bold' }}>Total: ${order.total.toFixed(2)}</p>
+                    <p style={{ margin: '5px 0', fontWeight: 'bold' }}>Total: ₹{order.total.toFixed(2)}</p>
                     <p style={{ margin: '5px 0', color: order.status === 'Pending' ? 'orange' : 'green' }}>Status: {order.status}</p>
                   </div>
                 </div>
@@ -69,7 +69,7 @@ function OrderHistory() {
                   <ul style={{ paddingLeft: '20px' }}>
                     {order.items.map((item) => (
                       <li key={item._id}>
-                        {item.product.name} - Quantity: {item.quantity} - ${(item.product.price * item.quantity).toFixed(2)}
+                        {item.product.name} - Quantity: {item.quantity} - ₹{(item.product.price * item.quantity).toFixed(2)}
                       </li>
                     ))}
                   </ul>

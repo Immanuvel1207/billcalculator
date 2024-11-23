@@ -8,9 +8,9 @@ function OrderDetails({ order, onClose, onUpdate }) {
   const markProductAsDone = async (productId) => {
     try {
       const token = localStorage.getItem('token');
-      await axios.patch(`https://billcalculator.onrender.com/api/orders/${order._id}/product/${productId}`, 
+      await axios.patch(`https://billcalculator.onrender.com/api/orders/₹{order._id}/product/₹{productId}`, 
         { isDone: true },
-        { headers: { Authorization: `Bearer ${token}` }}
+        { headers: { Authorization: `Bearer ₹{token}` }}
       );
       setUpdatedOrder(prevOrder => ({
         ...prevOrder,
@@ -27,9 +27,9 @@ function OrderDetails({ order, onClose, onUpdate }) {
   const updateOrderStatus = async (status) => {
     try {
       const token = localStorage.getItem('token');
-      await axios.patch(`https://billcalculator.onrender.com/api/orders/${order._id}`, 
+      await axios.patch(`https://billcalculator.onrender.com/api/orders/₹{order._id}`, 
         { status },
-        { headers: { Authorization: `Bearer ${token}` }}
+        { headers: { Authorization: `Bearer ₹{token}` }}
       );
       setUpdatedOrder(prevOrder => ({ ...prevOrder, status }));
       onUpdate();
@@ -41,9 +41,9 @@ function OrderDetails({ order, onClose, onUpdate }) {
   const markAsPaid = async () => {
     try {
       const token = localStorage.getItem('token');
-      await axios.patch(`https://billcalculator.onrender.com/api/orders/${order._id}`, 
+      await axios.patch(`https://billcalculator.onrender.com/api/orders/₹{order._id}`, 
         { isPaid: true },
-        { headers: { Authorization: `Bearer ${token}` }}
+        { headers: { Authorization: `Bearer ₹{token}` }}
       );
       setUpdatedOrder(prevOrder => ({ ...prevOrder, isPaid: true }));
       onUpdate();
@@ -60,14 +60,14 @@ function OrderDetails({ order, onClose, onUpdate }) {
         <h3>Order Details</h3>
         <p>Order ID: {updatedOrder._id}</p>
         <p>Customer: {updatedOrder.user ? updatedOrder.user.name : 'N/A'}</p>
-        <p>Total: ${updatedOrder.total.toFixed(2)}</p>
+        <p>Total: ₹{updatedOrder.total.toFixed(2)}</p>
         <p>Status: {updatedOrder.status}</p>
         <p>Paid: {updatedOrder.isPaid ? 'Yes' : 'No'}</p>
         <h4>Products:</h4>
         <ul className="product-list">
           {updatedOrder.items.map((item) => (
             <li key={item.product._id} className="product-item">
-              <span>{item.product.name} - Quantity: {item.quantity} - ${(item.product.price * item.quantity).toFixed(2)}</span>
+              <span>{item.product.name} - Quantity: {item.quantity} - ₹{(item.product.price * item.quantity).toFixed(2)}</span>
               {!item.isDone && (
                 <button onClick={() => markProductAsDone(item.product._id)} className="btn btn-small">Mark as Done</button>
               )}

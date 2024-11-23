@@ -18,7 +18,7 @@ function AdminPanel() {
     try {
       const token = localStorage.getItem('token');
       const response = await axios.get('https://billcalculator.onrender.com/api/orders', {
-        headers: { Authorization: `Bearer ${token}` }
+        headers: { Authorization: `Bearer ₹{token}` }
       });
       // Sort orders: Pending first, then by date (newest to oldest)
       const sortedOrders = response.data.sort((a, b) => {
@@ -36,7 +36,7 @@ function AdminPanel() {
     try {
       const token = localStorage.getItem('token');
       const response = await axios.get('https://billcalculator.onrender.com/api/products', {
-        headers: { Authorization: `Bearer ${token}` }
+        headers: { Authorization: `Bearer ₹{token}` }
       });
       setProducts(response.data);
     } catch (error) {
@@ -55,7 +55,7 @@ function AdminPanel() {
         imageUrl: e.target.imageUrl.value
       };
       await axios.post('https://billcalculator.onrender.com/api/products', newProduct, {
-        headers: { Authorization: `Bearer ${token}` }
+        headers: { Authorization: `Bearer ₹{token}` }
       });
       fetchProducts();
       e.target.reset();
@@ -67,8 +67,8 @@ function AdminPanel() {
   const deleteProduct = async (id) => {
     try {
       const token = localStorage.getItem('token');
-      await axios.delete(`https://billcalculator.onrender.com/api/products/${id}`, {
-        headers: { Authorization: `Bearer ${token}` }
+      await axios.delete(`https://billcalculator.onrender.com/api/products/₹{id}`, {
+        headers: { Authorization: `Bearer ₹{token}` }
       });
       fetchProducts();
     } catch (error) {
@@ -87,13 +87,13 @@ function AdminPanel() {
       <div className="tab-buttons">
         <button 
           onClick={() => setActiveTab('orders')} 
-          className={`btn ${activeTab === 'orders' ? 'btn-primary' : 'btn-secondary'}`}
+          className={`btn ₹{activeTab === 'orders' ? 'btn-primary' : 'btn-secondary'}`}
         >
           Orders
         </button>
         <button 
           onClick={() => setActiveTab('products')} 
-          className={`btn ${activeTab === 'products' ? 'btn-primary' : 'btn-secondary'}`}
+          className={`btn ₹{activeTab === 'products' ? 'btn-primary' : 'btn-secondary'}`}
         >
           Products
         </button>
@@ -127,7 +127,7 @@ function AdminPanel() {
                   <tr key={order._id} className={order.status === 'Pending' ? 'pending-order' : ''}>
                     <td>{order._id}</td>
                     <td>{order.user ? order.user.name : 'N/A'}</td>
-                    <td>${order.total.toFixed(2)}</td>
+                    <td>₹{order.total.toFixed(2)}</td>
                     <td>{new Date(order.createdAt).toLocaleString()}</td>
                     <td>{order.status}</td>
                     <td>{order.isPaid ? 'Yes' : 'No'}</td>
@@ -165,7 +165,7 @@ function AdminPanel() {
                 <img src={product.imageUrl} alt={product.name} className="product-image" />
                 <div className="product-details">
                   <h4>{product.name}</h4>
-                  <p>${product.price.toFixed(2)}</p>
+                  <p>₹{product.price.toFixed(2)}</p>
                   <button onClick={() => deleteProduct(product._id)} className="btn btn-danger">Delete</button>
                 </div>
               </div>

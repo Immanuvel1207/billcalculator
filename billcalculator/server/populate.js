@@ -30,7 +30,7 @@ async function addSampleProducts() {
     for (const product of sampleProducts) {
       const newProduct = new Product(product);
       await newProduct.save();
-      console.log(`Added product: ${product.name}`);
+      console.log(`Added product: ₹{product.name}`);
     }
 
     console.log('All sample products have been added to the database');

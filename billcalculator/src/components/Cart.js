@@ -36,7 +36,7 @@ function Cart() {
         total: calculateTotal(),
       };
       await axios.post('https://billcalculator.onrender.com/api/orders', order, {
-        headers: { Authorization: `Bearer ${token}` }
+        headers: { Authorization: `Bearer ₹{token}` }
       });
       localStorage.removeItem('cart');
       setCart([]);
@@ -58,7 +58,7 @@ function Cart() {
               <img src={item.imageUrl} alt={item.name} className="cart-item-image" />
               <div className="cart-item-details">
                 <h3>{item.name}</h3>
-                <p>${item.price.toFixed(2)}</p>
+                <p>₹{item.price.toFixed(2)}</p>
                 <div className="quantity-control">
                   <button onClick={() => updateQuantity(item._id, item.quantity - 1)}>-</button>
                   <span>{item.quantity}</span>
@@ -69,7 +69,7 @@ function Cart() {
             </div>
           ))}
           <div className="cart-total">
-            <h3>Total: ${calculateTotal().toFixed(2)}</h3>
+            <h3>Total: ₹{calculateTotal().toFixed(2)}</h3>
             <button onClick={handleCheckout} className="btn">Checkout</button>
           </div>
         </>

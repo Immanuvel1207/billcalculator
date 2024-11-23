@@ -55,7 +55,7 @@ function ProductList() {
             <img src={product.imageUrl} alt={product.name} className="product-image" />
             <h3 className="product-name">{product.name}</h3>
             <p className="product-description">{product.description}</p>
-            <p className="product-price">${product.price.toFixed(2)}</p>
+            <p className="product-price">₹{product.price.toFixed(2)}</p>
             <button onClick={() => addToCart(product)} className="btn btn-primary">Add to Cart</button>
           </div>
         ))}
