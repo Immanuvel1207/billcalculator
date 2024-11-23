@@ -57,7 +57,7 @@ function App() {
             />
             <Route 
               path="/order-history" 
-              element={isLoggedIn ? <OrderHistory isAdmin={isAdmin} /> : <Navigate to="/login" />} 
+              element={isLoggedIn ? <OrderHistory /> : <Navigate to="/login" />} 
             />
           </Routes>
         </div>

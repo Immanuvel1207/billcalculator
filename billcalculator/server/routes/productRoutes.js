@@ -18,10 +18,30 @@ router.post('/', auth, async (req, res) => {
     if (!req.user.isAdmin) {
       return res.status(403).json({ message: 'Access denied' });
     }
-    const { name, price } = req.body;
-    const product = new Product({ name, price });
+    const { name, price, description, imageUrl } = req.body;
+    const product = new Product({ name, price, description, imageUrl });
     await product.save();
     res.status(201).json(product);
+  } catch (error) {
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+router.put('/:id', auth, async (req, res) => {
+  try {
+    if (!req.user.isAdmin) {
+      return res.status(403).json({ message: 'Access denied' });
+    }
+    const { name, price, description, imageUrl } = req.body;
+    const product = await Product.findByIdAndUpdate(
+      req.params.id,
+      { name, price, description, imageUrl },
+      { new: true }
+    );
+    if (!product) {
+      return res.status(404).json({ message: 'Product not found' });
+    }
+    res.json(product);
   } catch (error) {
     res.status(500).json({ message: 'Server error' });
   }

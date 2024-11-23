@@ -1,6 +1,6 @@
-const express = require('express');
-const Cart = require('../models/Cart');
-const Product = require('../models/Product');
+import express from 'express';
+import Cart from '../models/Cart.js';
+import Product from '../models/Product.js';
 
 const router = express.Router();
 

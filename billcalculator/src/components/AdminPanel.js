@@ -20,7 +20,13 @@ function AdminPanel() {
       const response = await axios.get('https://billcalculator.onrender.com/api/orders', {
         headers: { Authorization: `Bearer ${token}` }
       });
-      setOrders(response.data);
+      // Sort orders: Pending first, then by date (newest to oldest)
+      const sortedOrders = response.data.sort((a, b) => {
+        if (a.status === 'Pending' && b.status !== 'Pending') return -1;
+        if (a.status !== 'Pending' && b.status === 'Pending') return 1;
+        return new Date(b.createdAt) - new Date(a.createdAt);
+      });
+      setOrders(sortedOrders);
     } catch (error) {
       console.error('Error fetching orders:', error);
     }
@@ -44,7 +50,9 @@ function AdminPanel() {
       const token = localStorage.getItem('token');
       const newProduct = {
         name: e.target.name.value,
-        price: parseFloat(e.target.price.value)
+        price: parseFloat(e.target.price.value),
+        description: e.target.description.value,
+        imageUrl: e.target.imageUrl.value
       };
       await axios.post('https://billcalculator.onrender.com/api/products', newProduct, {
         headers: { Authorization: `Bearer ${token}` }
@@ -68,32 +76,18 @@ function AdminPanel() {
     }
   };
 
-  const filteredOrders = orders
-    .filter(order => {
-      // Safe access to user name with nullish coalescing
-      const userName = order?.user?.name || '';
-      const orderId = order?._id || '';
-      
-      return userName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-             orderId.includes(searchTerm);
-    })
-    .sort((a, b) => {
-      const statusA = (a?.status || '').toLowerCase();
-      const statusB = (b?.status || '').toLowerCase();
-      
-      if (statusA === 'pending' && statusB !== 'pending') return -1;
-      if (statusA !== 'pending' && statusB === 'pending') return 1;
-      return 0;
-    });
+  const filteredOrders = orders.filter(order => 
+    (order.user && order.user.name && order.user.name.toLowerCase().includes(searchTerm.toLowerCase())) ||
+    order._id.includes(searchTerm)
+  );
 
   return (
-    <div className="card">
+    <div className="admin-panel">
       <h2>Admin Panel</h2>
-      <div style={{ marginBottom: '20px' }}>
+      <div className="tab-buttons">
         <button 
           onClick={() => setActiveTab('orders')} 
           className={`btn ${activeTab === 'orders' ? 'btn-primary' : 'btn-secondary'}`}
-          style={{ marginRight: '10px' }}
         >
           Orders
         </button>
@@ -106,18 +100,17 @@ function AdminPanel() {
       </div>
 
       {activeTab === 'orders' && (
-        <div>
+        <div className="orders-section">
           <h3>Orders</h3>
           <input
             type="text"
             placeholder="Search orders by customer name or order ID"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="input"
-            style={{ marginBottom: '20px' }}
+            className="input search-input"
           />
-          <div style={{ overflowX: 'auto' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+          <div className="order-list">
+            <table>
               <thead>
                 <tr>
                   <th>Order ID</th>
@@ -131,15 +124,15 @@ function AdminPanel() {
               </thead>
               <tbody>
                 {filteredOrders.map((order) => (
-                  <tr key={order?._id || Math.random()}>
-                    <td>{order?._id || 'N/A'}</td>
-                    <td>{order?.user?.name || 'Unknown Customer'}</td>
-                    <td>${(order?.total || 0).toFixed(2)}</td>
-                    <td>{order?.createdAt ? new Date(order.createdAt).toLocaleString() : 'N/A'}</td>
-                    <td>{order?.status || 'N/A'}</td>
-                    <td>{order?.isPaid ? 'Yes' : 'No'}</td>
+                  <tr key={order._id} className={order.status === 'Pending' ? 'pending-order' : ''}>
+                    <td>{order._id}</td>
+                    <td>{order.user ? order.user.name : 'N/A'}</td>
+                    <td>${order.total.toFixed(2)}</td>
+                    <td>{new Date(order.createdAt).toLocaleString()}</td>
+                    <td>{order.status}</td>
+                    <td>{order.isPaid ? 'Yes' : 'No'}</td>
                     <td>
-                      <button onClick={() => setSelectedOrder(order)} className="btn">View Details</button>
+                      <button onClick={() => setSelectedOrder(order)} className="btn btn-small">View Details</button>
                     </td>
                   </tr>
                 ))}
@@ -157,21 +150,27 @@ function AdminPanel() {
       )}
 
       {activeTab === 'products' && (
-        <div>
+        <div className="products-section">
           <h3>Products</h3>
-          <form onSubmit={addProduct} style={{ marginBottom: '20px' }}>
-            <input type="text" name="name" placeholder="Product Name" required className="input" style={{ marginRight: '10px' }} />
-            <input type="number" name="price" placeholder="Price" step="0.01" required className="input" style={{ marginRight: '10px' }} />
+          <form onSubmit={addProduct} className="add-product-form">
+            <input type="text" name="name" placeholder="Product Name" required className="input" />
+            <input type="number" name="price" placeholder="Price" step="0.01" required className="input" />
+            <input type="text" name="description" placeholder="Description" required className="input" />
+            <input type="text" name="imageUrl" placeholder="Image URL" required className="input" />
             <button type="submit" className="btn">Add Product</button>
           </form>
-          <ul style={{ listStyle: 'none', padding: 0 }}>
+          <div className="product-list">
             {products.map((product) => (
-              <li key={product?._id || Math.random()} style={{ marginBottom: '10px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span>{product?.name || 'Unnamed Product'} - ${(product?.price || 0).toFixed(2)}</span>
-                <button onClick={() => product?._id && deleteProduct(product._id)} className="btn btn-danger">Delete</button>
-              </li>
+              <div key={product._id} className="product-item">
+                <img src={product.imageUrl} alt={product.name} className="product-image" />
+                <div className="product-details">
+                  <h4>{product.name}</h4>
+                  <p>${product.price.toFixed(2)}</p>
+                  <button onClick={() => deleteProduct(product._id)} className="btn btn-danger">Delete</button>
+                </div>
+              </div>
             ))}
-          </ul>
+          </div>
         </div>
       )}
     </div>

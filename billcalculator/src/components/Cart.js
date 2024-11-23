@@ -1,74 +1,77 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-
 function Cart() {
   const [cart, setCart] = useState([]);
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Load cart from localStorage
-    const savedCart = JSON.parse(localStorage.getItem('cart') || '[]');
+    const savedCart = JSON.parse(localStorage.getItem('cart')) || [];
     setCart(savedCart);
   }, []);
 
   const updateQuantity = (productId, newQuantity) => {
     const updatedCart = cart.map(item => 
-      item.product._id === productId ? { ...item, quantity: newQuantity } : item
+      item._id === productId ? { ...item, quantity: newQuantity } : item
     ).filter(item => item.quantity > 0);
     setCart(updatedCart);
     localStorage.setItem('cart', JSON.stringify(updatedCart));
   };
 
   const removeItem = (productId) => {
-    const updatedCart = cart.filter(item => item.product._id !== productId);
+    const updatedCart = cart.filter(item => item._id !== productId);
     setCart(updatedCart);
     localStorage.setItem('cart', JSON.stringify(updatedCart));
   };
 
-  const total = cart.reduce((sum, item) => sum + item.product.price * item.quantity, 0);
+  const calculateTotal = () => {
+    return cart.reduce((total, item) => total + item.price * item.quantity, 0);
+  };
 
-  const placeOrder = async () => {
+  const handleCheckout = async () => {
     try {
       const token = localStorage.getItem('token');
-      await axios.post('https://billcalculator.onrender.com/api/orders', {
-        items: cart.map(item => ({ product: item.product._id, quantity: item.quantity })),
-        total
-      }, {
+      const order = {
+        items: cart.map(item => ({ product: item._id, quantity: item.quantity })),
+        total: calculateTotal(),
+      };
+      await axios.post('https://billcalculator.onrender.com/api/orders', order, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      alert('Order placed successfully');
-      setCart([]);
       localStorage.removeItem('cart');
+      setCart([]);
       navigate('/order-history');
     } catch (error) {
       console.error('Error placing order:', error);
-      alert('Failed to place order. Please try again.');
     }
   };
 
   return (
-    <div>
-      <h2>Cart</h2>
+    <div className="cart">
+      <h2>Your Cart</h2>
       {cart.length === 0 ? (
         <p>Your cart is empty.</p>
       ) : (
         <>
-          <ul style={{ listStyle: 'none', padding: 0 }}>
-            {cart.map((item) => (
-              <li key={item.product._id} style={{ marginBottom: '10px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span>{item.product.name} - ${(item.product.price * item.quantity).toFixed(2)}</span>
-                <div>
-                  <button onClick={() => updateQuantity(item.product._id, item.quantity - 1)}>-</button>
-                  <span style={{ margin: '0 10px' }}>{item.quantity}</span>
-                  <button onClick={() => updateQuantity(item.product._id, item.quantity + 1)}>+</button>
-                  <button onClick={() => removeItem(item.product._id)} style={{ marginLeft: '10px' }}>Remove</button>
+          {cart.map((item) => (
+            <div key={item._id} className="cart-item">
+              <img src={item.imageUrl} alt={item.name} className="cart-item-image" />
+              <div className="cart-item-details">
+                <h3>{item.name}</h3>
+                <p>${item.price.toFixed(2)}</p>
+                <div className="quantity-control">
+                  <button onClick={() => updateQuantity(item._id, item.quantity - 1)}>-</button>
+                  <span>{item.quantity}</span>
+                  <button onClick={() => updateQuantity(item._id, item.quantity + 1)}>+</button>
                 </div>
-              </li>
-            ))}
-          </ul>
-          <p>Total: ${total.toFixed(2)}</p>
-          <button onClick={placeOrder} style={{ padding: '10px 20px' }}>Place Order</button>
+                <button onClick={() => removeItem(item._id)} className="remove-btn">Remove</button>
+              </div>
+            </div>
+          ))}
+          <div className="cart-total">
+            <h3>Total: ${calculateTotal().toFixed(2)}</h3>
+            <button onClick={handleCheckout} className="btn">Checkout</button>
+          </div>
         </>
       )}
     </div>
