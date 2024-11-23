@@ -6,7 +6,7 @@ function Navbar({ isLoggedIn, isAdmin, onLogout }) {
       <div className="navbar-container">
         <Link to="/" className="navbar-logo">Grocery Store</Link>
         <ul className="nav-menu">
-          {isLoggedIn && (
+          {isLoggedIn && ( 
             <>
               <li className="nav-item">
                 <Link to="/" className="nav-link">Products</Link>
