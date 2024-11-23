@@ -69,16 +69,22 @@ function AdminPanel() {
   };
 
   const filteredOrders = orders
-  .filter(order => 
-    order.user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    order._id.includes(searchTerm)
-  )
-  .sort((a, b) => {
-    if (a.status === 'pending' && b.status !== 'pending') return -1;
-    if (a.status !== 'pending' && b.status === 'pending') return 1;
-    return 0; // If both are pending or both are not pending, keep their original order
-  });
-
+    .filter(order => {
+      // Safe access to user name with nullish coalescing
+      const userName = order?.user?.name || '';
+      const orderId = order?._id || '';
+      
+      return userName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+             orderId.includes(searchTerm);
+    })
+    .sort((a, b) => {
+      const statusA = (a?.status || '').toLowerCase();
+      const statusB = (b?.status || '').toLowerCase();
+      
+      if (statusA === 'pending' && statusB !== 'pending') return -1;
+      if (statusA !== 'pending' && statusB === 'pending') return 1;
+      return 0;
+    });
 
   return (
     <div className="card">
@@ -125,13 +131,13 @@ function AdminPanel() {
               </thead>
               <tbody>
                 {filteredOrders.map((order) => (
-                  <tr key={order._id}>
-                    <td>{order._id}</td>
-                    <td>{order.user.name}</td>
-                    <td>${order.total.toFixed(2)}</td>
-                    <td>{new Date(order.createdAt).toLocaleString()}</td>
-                    <td>{order.status}</td>
-                    <td>{order.isPaid ? 'Yes' : 'No'}</td>
+                  <tr key={order?._id || Math.random()}>
+                    <td>{order?._id || 'N/A'}</td>
+                    <td>{order?.user?.name || 'Unknown Customer'}</td>
+                    <td>${(order?.total || 0).toFixed(2)}</td>
+                    <td>{order?.createdAt ? new Date(order.createdAt).toLocaleString() : 'N/A'}</td>
+                    <td>{order?.status || 'N/A'}</td>
+                    <td>{order?.isPaid ? 'Yes' : 'No'}</td>
                     <td>
                       <button onClick={() => setSelectedOrder(order)} className="btn">View Details</button>
                     </td>
@@ -160,9 +166,9 @@ function AdminPanel() {
           </form>
           <ul style={{ listStyle: 'none', padding: 0 }}>
             {products.map((product) => (
-              <li key={product._id} style={{ marginBottom: '10px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span>{product.name} - ${product.price.toFixed(2)}</span>
-                <button onClick={() => deleteProduct(product._id)} className="btn btn-danger">Delete</button>
+              <li key={product?._id || Math.random()} style={{ marginBottom: '10px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <span>{product?.name || 'Unnamed Product'} - ${(product?.price || 0).toFixed(2)}</span>
+                <button onClick={() => product?._id && deleteProduct(product._id)} className="btn btn-danger">Delete</button>
               </li>
             ))}
           </ul>
