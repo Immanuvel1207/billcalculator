@@ -8,6 +8,7 @@ function AdminPanel() {
   const [searchTerm, setSearchTerm] = useState('');
   const [activeTab, setActiveTab] = useState('orders');
   const [selectedOrder, setSelectedOrder] = useState(null);
+  const [editingProduct, setEditingProduct] = useState(null);
 
   useEffect(() => {
     fetchOrders();
@@ -17,10 +18,9 @@ function AdminPanel() {
   const fetchOrders = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get('https://billcalculator.onrender.com/api/orders', {
-        headers: { Authorization: `Bearer ₹{token}` }
+      const response = await axios.get('http://localhost:5000/api/orders', {
+        headers: { Authorization: `Bearer ${token}` }
       });
-      // Sort orders: Pending first, then by date (newest to oldest)
       const sortedOrders = response.data.sort((a, b) => {
         if (a.status === 'Pending' && b.status !== 'Pending') return -1;
         if (a.status !== 'Pending' && b.status === 'Pending') return 1;
@@ -35,8 +35,8 @@ function AdminPanel() {
   const fetchProducts = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get('https://billcalculator.onrender.com/api/products', {
-        headers: { Authorization: `Bearer ₹{token}` }
+      const response = await axios.get('http://localhost:5000/api/products', {
+        headers: { Authorization: `Bearer ${token}` }
       });
       setProducts(response.data);
     } catch (error) {
@@ -54,8 +54,8 @@ function AdminPanel() {
         description: e.target.description.value,
         imageUrl: e.target.imageUrl.value
       };
-      await axios.post('https://billcalculator.onrender.com/api/products', newProduct, {
-        headers: { Authorization: `Bearer ₹{token}` }
+      await axios.post('http://localhost:5000/api/products', newProduct, {
+        headers: { Authorization: `Bearer ${token}` }
       });
       fetchProducts();
       e.target.reset();
@@ -67,13 +67,41 @@ function AdminPanel() {
   const deleteProduct = async (id) => {
     try {
       const token = localStorage.getItem('token');
-      await axios.delete(`https://billcalculator.onrender.com/api/products/₹{id}`, {
-        headers: { Authorization: `Bearer ₹{token}` }
+      await axios.delete(`http://localhost:5000/api/products/${id}`, {
+        headers: { Authorization: `Bearer ${token}` }
       });
       fetchProducts();
     } catch (error) {
       console.error('Error deleting product:', error);
     }
+  };
+
+  const startEditing = (product) => {
+    setEditingProduct({ ...product });
+  };
+
+  const cancelEditing = () => {
+    setEditingProduct(null);
+  };
+
+  const saveProductChanges = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      await axios.put(`http://localhost:5000/api/products/${editingProduct._id}`, editingProduct, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      fetchProducts();
+      setEditingProduct(null);
+    } catch (error) {
+      console.error('Error updating product:', error);
+    }
+  };
+
+  const handleEditChange = (e) => {
+    setEditingProduct({
+      ...editingProduct,
+      [e.target.name]: e.target.name === 'price' ? parseFloat(e.target.value) : e.target.value
+    });
   };
 
   const filteredOrders = orders.filter(order => 
@@ -87,13 +115,13 @@ function AdminPanel() {
       <div className="tab-buttons">
         <button 
           onClick={() => setActiveTab('orders')} 
-          className={`btn ₹{activeTab === 'orders' ? 'btn-primary' : 'btn-secondary'}`}
+          className={`btn ${activeTab === 'orders' ? 'btn-primary' : 'btn-secondary'}`}
         >
           Orders
         </button>
         <button 
           onClick={() => setActiveTab('products')} 
-          className={`btn ₹{activeTab === 'products' ? 'btn-primary' : 'btn-secondary'}`}
+          className={`btn ${activeTab === 'products' ? 'btn-primary' : 'btn-secondary'}`}
         >
           Products
         </button>
@@ -127,7 +155,7 @@ function AdminPanel() {
                   <tr key={order._id} className={order.status === 'Pending' ? 'pending-order' : ''}>
                     <td>{order._id}</td>
                     <td>{order.user ? order.user.name : 'N/A'}</td>
-                    <td>₹{order.total.toFixed(2)}</td>
+                    <td>${order.total.toFixed(2)}</td>
                     <td>{new Date(order.createdAt).toLocaleString()}</td>
                     <td>{order.status}</td>
                     <td>{order.isPaid ? 'Yes' : 'No'}</td>
@@ -163,11 +191,41 @@ function AdminPanel() {
             {products.map((product) => (
               <div key={product._id} className="product-item">
                 <img src={product.imageUrl} alt={product.name} className="product-image" />
-                <div className="product-details">
-                  <h4>{product.name}</h4>
-                  <p>₹{product.price.toFixed(2)}</p>
-                  <button onClick={() => deleteProduct(product._id)} className="btn btn-danger">Delete</button>
-                </div>
+                {editingProduct && editingProduct._id === product._id ? (
+                  <div className="product-edit-form">
+                    <input
+                      type="text"
+                      name="name"
+                      value={editingProduct.name}
+                      onChange={handleEditChange}
+                      className="input"
+                    />
+                    <input
+                      type="number"
+                      name="price"
+                      value={editingProduct.price}
+                      onChange={handleEditChange}
+                      step="0.01"
+                      className="input"
+                    />
+                    <textarea
+                      name="description"
+                      value={editingProduct.description}
+                      onChange={handleEditChange}
+                      className="input"
+                    />
+                    <button onClick={saveProductChanges} className="btn btn-primary">Save</button>
+                    <button onClick={cancelEditing} className="btn btn-secondary">Cancel</button>
+                  </div>
+                ) : (
+                  <div className="product-details">
+                    <h4>{product.name}</h4>
+                    <p>${product.price.toFixed(2)}</p>
+                    <p>{product.description}</p>
+                    <button onClick={() => startEditing(product)} className="btn btn-primary">Edit</button>
+                    <button onClick={() => deleteProduct(product._id)} className="btn btn-danger">Delete</button>
+                  </div>
+                )}
               </div>
             ))}
           </div>
