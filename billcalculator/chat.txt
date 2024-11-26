@@ -1,0 +1,1117 @@
+chat
+
+
+Server
+
+
+
+import java.io.*;
+
+import java.net.*;
+
+
+
+public class tcpserver {
+
+    public static void main(String[] args) throws IOException {
+
+        ServerSocket serverSocket = new ServerSocket(12345);
+
+        System.out.println("Server started...");
+
+        Socket socket = serverSocket.accept();
+
+        BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+
+        PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
+
+        BufferedReader console = new BufferedReader(new InputStreamReader(System.in));
+
+        while (true) {
+
+            String clientMessage = in.readLine();
+
+            if (clientMessage.equalsIgnoreCase("bye")) break;
+
+            System.out.println("Client: " + clientMessage);
+
+            System.out.print("You: ");
+
+            out.println(console.readLine());
+
+        }
+
+        socket.close();
+
+        serverSocket.close();
+
+}
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+client
+
+
+
+import java.io.*;
+
+import java.net.*;
+
+
+
+public class tcpclient {
+
+     public static void main(String[] args) throws IOException {
+
+        Socket socket = new Socket("localhost", 12345);
+
+        BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+
+        PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
+
+        BufferedReader console = new BufferedReader(new InputStreamReader(System.in));
+
+        while (true) {
+
+            System.out.print("You: ");
+
+            out.println(console.readLine());
+
+            String serverMessage = in.readLine();
+
+            if (serverMessage.equalsIgnoreCase("bye")) break;
+
+            System.out.println("Server: " + serverMessage);
+
+        }
+
+        socket.close();
+
+        }
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+UDP FIBBO
+
+
+
+server
+
+
+
+import java.net.*;
+
+public class server {
+
+
+
+    public static void main(String[] args) throws Exception {
+
+        DatagramSocket socket = new DatagramSocket(12345);
+
+        byte[] buffer = new byte[1024];
+
+        while (true) {
+
+            DatagramPacket request = new DatagramPacket(buffer, buffer.length);
+
+            socket.receive(request);
+
+            String numStr = new String(request.getData(), 0, request.getLength());
+
+            int n = Integer.parseInt(numStr.trim());
+
+            int a = 0, b = 1, fib = 0;
+
+            for (int i = 2; i <= n; i++) {
+
+                fib = a + b;
+
+                a = b;
+
+                b = fib; 
+
+            }
+
+            String response = n == 0 ? "0" : n == 1 ? "1" : String.valueOf(fib);
+
+            DatagramPacket reply = new DatagramPacket(response.getBytes(), response.length(),
+
+            request.getAddress(), request.getPort());
+
+            socket.send(reply); 
+
+        } 
+
+    } 
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+client
+
+
+
+import java.net.*;
+
+import java.util.Scanner;
+
+
+
+public class client {
+
+    public static void main(String[] args) throws Exception {
+
+        DatagramSocket socket = new DatagramSocket();
+
+        InetAddress serverAddress = InetAddress.getByName("localhost");
+
+        Scanner scanner = new Scanner(System.in);
+
+
+
+        System.out.print("Enter a number: ");
+
+        String number = scanner.nextLine();
+
+
+
+        DatagramPacket request = new DatagramPacket(number.getBytes(), number.length(), serverAddress, 12345);
+
+        socket.send(request);
+
+
+
+        byte[] buffer = new byte[1024];
+
+        DatagramPacket response = new DatagramPacket(buffer, buffer.length);
+
+
+
+        String result = new String(response.getData(), 0, response.getLength());
+
+        System.out.println("Fibonacci result: " + result);
+
+
+
+        socket.close();
+
+    }
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+TCP Bill
+
+
+
+server
+
+
+
+import java.io.*;
+
+import java.net.*;
+
+
+
+public class tcpserverbill {
+
+    public static void main(String[] args) throws IOException {
+
+        ServerSocket server = new ServerSocket(8080);
+
+        Socket client = server.accept();
+
+        BufferedReader in = new BufferedReader(new InputStreamReader(client.getInputStream()));
+
+        PrintWriter out = new PrintWriter(client.getOutputStream(), true);
+
+
+
+        int units = Integer.parseInt(in.readLine());
+
+        int amount = units * 10;
+
+        out.println(amount);
+
+
+
+        client.close();
+
+        server.close();
+
+    }
+
+}
+
+
+
+
+
+
+
+client
+
+
+
+import java.io.*;
+
+import java.net.*;
+
+
+
+public class tcpclientbill {
+
+    public static void main(String[] args) throws IOException {
+
+        Socket socket = new Socket("127.0.0.1", 8080);
+
+        BufferedReader userInput = new BufferedReader(new InputStreamReader(System.in));
+
+        PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
+
+        BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+
+
+
+        System.out.print("Enter units: ");
+
+        int units = Integer.parseInt(userInput.readLine());
+
+        out.println(units);
+
+        System.out.println("Amount: " + in.readLine());
+
+
+
+        socket.close();
+
+    }
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+UDP Bill
+
+
+
+server
+
+
+
+import java.net.*;
+
+
+
+public class udpserverbill {
+
+    public static void main(String[] args) throws Exception {
+
+        DatagramSocket server = new DatagramSocket(8080);
+
+        byte[] buffer = new byte[1024];
+
+        DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
+
+        server.receive(packet);
+
+
+
+        int units = Integer.parseInt(new String(packet.getData(), 0, packet.getLength()));
+
+        int amount = units * 10;
+
+        String response = String.valueOf(amount);
+
+
+
+        DatagramPacket responsePacket = new DatagramPacket(
+
+            response.getBytes(), response.getBytes().length, packet.getAddress(), packet.getPort());
+
+        server.send(responsePacket);
+
+
+
+        server.close();
+
+    }
+
+}
+
+
+
+
+
+
+
+
+
+
+
+client
+
+
+
+
+
+import java.net.*;
+
+import java.util.Scanner;
+
+
+
+public class udpclientbill {
+
+    public static void main(String[] args) throws Exception {
+
+        DatagramSocket client = new DatagramSocket();
+
+        InetAddress serverAddress = InetAddress.getByName("127.0.0.1");
+
+
+
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.print("Enter units: ");
+
+        String units = scanner.nextLine();
+
+
+
+        byte[] sendData = units.getBytes();
+
+        DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, serverAddress, 8080);
+
+        client.send(sendPacket);
+
+
+
+        byte[] receiveData = new byte[1024];
+
+        DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
+
+        client.receive(receivePacket);
+
+
+
+        System.out.println("Amount: " + new String(receivePacket.getData(), 0, receivePacket.getLength()));
+
+
+
+        client.close();
+
+        scanner.close();
+
+    }
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Go back
+
+
+
+import java.io.*;
+
+import java.net.*;
+
+
+
+public class server {
+
+    public static void main(String[] args) throws IOException {
+
+        // Start the server on port 12345
+
+        ServerSocket serverSocket = new ServerSocket(12345);
+
+        System.out.println("Server started...");
+
+        
+
+        // Accept client connection
+
+        Socket socket = serverSocket.accept();
+
+        BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+
+        PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
+
+
+
+        int expectedSeq = 0;  // Initial expected sequence number
+
+
+
+        // Continuously receive packets
+
+        while (true) {
+
+            String packet = in.readLine();
+
+
+
+            // If no packet or "exit" signal received, stop the server
+
+            if (packet == null || packet.equals("exit")) break;
+
+
+
+            int seqNum = Integer.parseInt(packet);
+
+
+
+            // Check if the packet is in order
+
+            if (seqNum == expectedSeq) {
+
+                System.out.println("Received: " + seqNum);
+
+                out.println("ACK " + seqNum);  // Send ACK with current sequence number
+
+                expectedSeq++;  // Increment expected sequence number
+
+            } else {
+
+                System.out.println("Out of order packet: " + seqNum);
+
+                out.println("ACK " + (expectedSeq - 1));  // Send last valid ACK
+
+            }
+
+        }
+
+
+
+        // Close the connection and server socket
+
+        socket.close();
+
+        serverSocket.close();
+
+    }
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+client
+
+
+
+import java.io.*;
+
+import java.net.*;
+
+
+
+public class client {
+
+    public static void main(String[] args) throws IOException {
+
+        // Connect to the server
+
+        Socket socket = new Socket("localhost", 12345);
+
+        PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
+
+        BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+
+
+
+        // Packets to send
+
+        int[] packets = {0, 1, 2, 3, 4};
+
+        int windowSize = 3;
+
+        int base = 0;
+
+
+
+        // Sending packets with Go-Back-N protocol
+
+        while (base < packets.length) {
+
+            // Send packets within the window
+
+            for (int i = 0; i < windowSize && base + i < packets.length; i++) {
+
+                System.out.println("Sending: " + packets[base + i]);
+
+                out.println(packets[base + i]);
+
+            }
+
+
+
+            // Receive acknowledgment
+
+            String ack = in.readLine();
+
+            if (ack != null && ack.startsWith("ACK")) {
+
+                int ackNum = Integer.parseInt(ack.split(" ")[1]);
+
+                if (ackNum >= base) {
+
+                    base = ackNum + 1; // Move the window base
+
+                }
+
+            }
+
+        }
+
+
+
+        // Signal server to exit
+
+        out.println("exit");
+
+        socket.close();
+
+    }
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+selective
+
+
+
+server
+
+
+
+import java.io.*;
+
+import java.net.*;
+
+import java.util.HashMap;
+
+
+
+public class server {
+
+    public static void main(String[] args) throws IOException {
+
+        // Start the server on port 8080
+
+        ServerSocket serverSocket = new ServerSocket(8080);
+
+        System.out.println("Server started...");
+
+
+
+        // Accept the client connection
+
+        Socket socket = serverSocket.accept();
+
+        BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+
+        PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
+
+
+
+        // Notify the client to send frame count and window size
+
+        out.println("SEND_FRAME_AND_WINDOW_SIZE");
+
+
+
+        // Read frame count and window size from client
+
+        String[] input = in.readLine().split(" ");
+
+        int tf = Integer.parseInt(input[0]);  // Total number of frames
+
+        int N = Integer.parseInt(input[1]);   // Window size
+
+
+
+        // Map to track acknowledgments for each frame
+
+        HashMap<Integer, Boolean> ackMap = new HashMap<>();
+
+        for (int i = 1; i <= tf; i++) {
+
+            ackMap.put(i, false);
+
+        }
+
+
+
+        // Sending frames in selective repeat manner
+
+        for (int i = 1; i <= tf;) {
+
+            // Send frames in the current window
+
+            for (int j = i; j < i + N && j <= tf; j++) {
+
+                if (!ackMap.get(j)) {
+
+                    out.println("Frame " + j);
+
+                    System.out.println("Sent: Frame " + j);
+
+                }
+
+            }
+
+
+
+            // Receive acknowledgments for the sent frames
+
+            for (int j = i; j < i + N && j <= tf; j++) {
+
+                String ack = in.readLine();
+
+                if (ack.equals("ACK")) {
+
+                    ackMap.put(j, true);
+
+                    System.out.println("ACK received for Frame " + j);
+
+                } else {
+
+                    System.out.println("NACK for Frame " + j);
+
+                }
+
+            }
+
+
+
+            // Move window to the next unacknowledged frame
+
+            while (i <= tf && ackMap.get(i)) {
+
+                i++;
+
+            }
+
+        }
+
+
+
+        System.out.println("All frames sent successfully.");
+
+
+
+        // Close the connection
+
+        socket.close();
+
+        serverSocket.close();
+
+    }
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+CLIENT
+
+
+
+
+
+import java.io.*;
+
+import java.net.*;
+
+import java.util.Scanner;
+
+
+
+public class client {
+
+    public static void main(String[] args) throws IOException {
+
+        // Connect to the server on localhost:8080
+
+        Socket socket = new Socket("localhost", 8080);
+
+        BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+
+        PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
+
+        Scanner scanner = new Scanner(System.in);
+
+
+
+        System.out.println("Waiting for server request...");
+
+        String serverMsg = in.readLine();
+
+
+
+        // If the server asks for frame count and window size
+
+        if (serverMsg.equals("SEND_FRAME_AND_WINDOW_SIZE")) {
+
+            System.out.print("Enter total frames: ");
+
+            int tf = scanner.nextInt();
+
+            System.out.print("Enter window size: ");
+
+            int N = scanner.nextInt();
+
+            out.println(tf + " " + N);
+
+        }
+
+
+
+        // Continuously receive frames and ask for acknowledgment
+
+        while (true) {
+
+            String frame = in.readLine();
+
+            if (frame == null) break;
+
+
+
+            System.out.println("Received: " + frame);
+
+            System.out.print("Enter ACK or NACK: ");
+
+            String ack = scanner.next();
+
+            out.println(ack);
+
+        }
+
+
+
+        // Close the socket connection
+
+        socket.close();
+
+    }
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
