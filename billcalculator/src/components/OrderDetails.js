@@ -8,7 +8,7 @@ function OrderDetails({ order, onClose, onUpdate }) {
   const markProductAsDone = async (productId) => {
     try {
       const token = localStorage.getItem('token');
-      await axios.patch(`https://billcalculator.onrender.com/api/orders/₹{order._id}/product/₹{productId}`, 
+      await axios.patch(`http://localhost:5000/api/orders/₹{order._id}/product/₹{productId}`, 
         { isDone: true },
         { headers: { Authorization: `Bearer ₹{token}` }}
       );
@@ -27,7 +27,7 @@ function OrderDetails({ order, onClose, onUpdate }) {
   const updateOrderStatus = async (status) => {
     try {
       const token = localStorage.getItem('token');
-      await axios.patch(`https://billcalculator.onrender.com/api/orders/₹{order._id}`, 
+      await axios.patch(`http://localhost:5000/api/orders/₹{order._id}`, 
         { status },
         { headers: { Authorization: `Bearer ₹{token}` }}
       );
@@ -41,7 +41,7 @@ function OrderDetails({ order, onClose, onUpdate }) {
   const markAsPaid = async () => {
     try {
       const token = localStorage.getItem('token');
-      await axios.patch(`https://billcalculator.onrender.com/api/orders/₹{order._id}`, 
+      await axios.patch(`http://localhost:5000/api/orders/₹{order._id}`, 
         { isPaid: true },
         { headers: { Authorization: `Bearer ₹{token}` }}
       );

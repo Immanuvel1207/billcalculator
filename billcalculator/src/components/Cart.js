@@ -31,20 +31,32 @@ function Cart() {
   const handleCheckout = async () => {
     try {
       const token = localStorage.getItem('token');
+      if (!token) {
+        alert('Please log in to complete the checkout.');
+        return;
+      }
       const order = {
-        items: cart.map(item => ({ product: item._id, quantity: item.quantity })),
+        items: cart.map((item) => ({
+          product: item._id,
+          quantity: item.quantity,
+        })),
         total: calculateTotal(),
       };
-      await axios.post('https://billcalculator.onrender.com/api/orders', order, {
-        headers: { Authorization: `Bearer ₹{token}` }
+      const response = await axios.post('http://localhost:5000/api/orders', order, {
+        headers: { Authorization: `Bearer ${token}` },
       });
+  
+      // Clear cart after successful checkout
       localStorage.removeItem('cart');
       setCart([]);
-      navigate('/order-history');
+      alert('Order placed successfully!');
+      navigate('/order-history'); // Adjust as needed for your routes
     } catch (error) {
-      console.error('Error placing order:', error);
+      console.error('Error placing order:', error.response?.data?.message || error.message);
+      alert('Error placing order. Please try again.');
     }
   };
+  
 
   return (
     <div className="cart">

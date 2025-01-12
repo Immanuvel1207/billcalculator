@@ -14,7 +14,7 @@ function OrderHistory() {
   const fetchOrders = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get('https://billcalculator.onrender.com/api/orders/user', {
+      const response = await axios.get('http://localhost:5000/api/orders/user', {
         headers: { Authorization: `Bearer ₹{token}` }
       });
       const sortedOrders = response.data.sort((a, b) => {
