@@ -1115,3 +1115,103 @@ public class client {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Bitstuffing
+
+#include <stdio.h>
+#include <string.h>
+#define MAX 100
+
+void bitStuffing(char input[], char output[]) {
+    int count = 0, j = 0;
+    for (int i = 0; input[i] != '\0'; i++) {
+        output[j++] = input[i];
+        if (input[i] == '1') {
+            count++;
+            if (count == 5) { // Insert '0' after five consecutive '1's
+                output[j++] = '0';
+                count = 0;
+            }
+        } else {
+            count = 0; // Reset count if it's not '1'
+        }
+    }
+    output[j] = '\0'; // Null-terminate the string
+}
+
+int main() {
+    char input[MAX], output[MAX * 2];
+    printf("Enter bit string: ");
+    scanf("%s", input);
+    bitStuffing(input, output);
+    printf("Bit-stuffed output: %s\n", output);
+    return 0;
+}
+
+
+
+
+
+
+
+Bytestuffing
+
+
+#include <stdio.h>
+#include <string.h>
+#define FLAG 'F'
+#define ESC 'E'
+
+void byteStuffing(char input[], char output[]) {
+    int j = 0;
+    for (int i = 0; input[i] != '\0'; i++) {
+        if (input[i] == FLAG || input[i] == ESC) {
+            output[j++] = ESC; // Add escape character
+        }
+        output[j++] = input[i];
+    }
+    output[j] = '\0'; // Null-terminate the string
+}
+
+int main() {
+    char input[100], output[200];
+    printf("Enter frame payload: ");
+    scanf("%s", input);
+    byteStuffing(input, output);
+    printf("Byte-stuffed output: F%sF\n", output);
+    return 0;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
