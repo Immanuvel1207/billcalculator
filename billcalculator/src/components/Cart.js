@@ -42,7 +42,7 @@ function Cart() {
         })),
         total: calculateTotal(),
       };
-      const response = await axios.post('http://localhost:5000/api/orders', order, {
+      const response = await axios.post('https://billcalculator.onrender.com/api/orders', order, {
         headers: { Authorization: `Bearer ${token}` },
       });
   
