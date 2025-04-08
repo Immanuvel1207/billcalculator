@@ -42,7 +42,7 @@ function Cart() {
         })),
         total: calculateTotal(),
       };
-      const response = await axios.post('https://billcalculator.onrender.com/api/orders', order, {
+      const response = await axios.post('https://billcalculator-seven.vercel.app/api/orders', order, {
         headers: { Authorization: `Bearer ${token}` },
       });
   

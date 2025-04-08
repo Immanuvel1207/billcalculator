@@ -16,7 +16,7 @@ function OrderHistory() {
         console.error('No token found, user might not be logged in');
         return;
       }
-      const response = await axios.get('https://billcalculator.onrender.com/api/orders/user', {
+      const response = await axios.get('https://billcalculator-seven.vercel.app/api/orders/user', {
         headers: { Authorization: `Bearer ${token}` }
       });
       const sortedOrders = response.data.sort((a, b) => {

@@ -18,7 +18,7 @@ function AdminPanel() {
   const fetchOrders = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get('https://billcalculator.onrender.com/api/orders', {
+      const response = await axios.get('https://billcalculator-seven.vercel.app/api/orders', {
         headers: { Authorization: `Bearer ${token}` }
       });
       const sortedOrders = response.data.sort((a, b) => {
@@ -35,7 +35,7 @@ function AdminPanel() {
   const fetchProducts = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get('https://billcalculator.onrender.com/api/products', {
+      const response = await axios.get('https://billcalculator-seven.vercel.app/api/products', {
         headers: { Authorization: `Bearer ${token}` }
       });
       setProducts(response.data);
@@ -54,7 +54,7 @@ function AdminPanel() {
         description: e.target.description.value,
         imageUrl: e.target.imageUrl.value
       };
-      await axios.post('https://billcalculator.onrender.com/api/products', newProduct, {
+      await axios.post('https://billcalculator-seven.vercel.app/api/products', newProduct, {
         headers: { Authorization: `Bearer ${token}` }
       });
       fetchProducts();
@@ -67,7 +67,7 @@ function AdminPanel() {
   const deleteProduct = async (id) => {
     try {
       const token = localStorage.getItem('token');
-      await axios.delete(`https://billcalculator.onrender.com/api/products/${id}`, {
+      await axios.delete(`https://billcalculator-seven.vercel.app/api/products/${id}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       fetchProducts();
@@ -87,7 +87,7 @@ function AdminPanel() {
   const saveProductChanges = async () => {
     try {
       const token = localStorage.getItem('token');
-      await axios.put(`https://billcalculator.onrender.com/api/products/${editingProduct._id}`, editingProduct, {
+      await axios.put(`https://billcalculator-seven.vercel.app/api/products/${editingProduct._id}`, editingProduct, {
         headers: { Authorization: `Bearer ${token}` }
       });
       fetchProducts();
